@@ -686,20 +686,6 @@ http://127.0.0.1:8000
 
 ---
 
-# Future Improvements
-
-Potential future upgrades:
-
-* Machine learning race prediction models
-* Driver pace forecasting
-* Tire degradation analytics
-* Multi-race historical analysis
-* Docker deployment
-* Cloud-hosted backend
-* Real-time websocket updates
-* Advanced telemetry simulations
-
----
 
 # Resume Value
 
@@ -716,7 +702,3 @@ This project demonstrates:
 * Interactive Visualization
 
 ---
-
-# Author
-
-Built as a real-time endurance racing analytics platform inspired by modern motorsport telemetry and sports analytics systems.
