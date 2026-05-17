@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DeltaMetrics | Live Race Analytics</title>
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght=0,300;0,700;1,900&family=Space+Grotesk:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+    <link rel="stylesheet" href="static/css/style.css">
+</head>
+<body>
+
+    <div class="main-container">
+
+        <header class="dashboard-header">
+            <div class="logo">Delta<span>Metrics</span></div>
+            <div class="header-right">
+                <div style="display: none !important;">
+                    <span id="countdown-timer">24:00:00</span>
+                </div>
+                
+                <div id="live-status-container" class="live-status">
+                    <span class="live-dot"></span> LIVE SYNC: 30S
+                </div>
+            </div>
+        </header>
+
+        <div class="subtext">
+            Powered by Selenium + SQLite + FastAPI // Dashboard updates automatically every 30 seconds
+        </div>
+
+        <h2 class="section-title"> System Array Overview</h2>
+        <div id="stats" class="stats-grid"></div>
+
+        <h2 class="section-title"> Live Win Probability Index</h2>
+        <div id="winner-predictions" class="prediction-grid"></div>
+
+        <h2 class="section-title"> Current Lap Leaders</h2>
+        <div id="top-drivers" class="top-driver-grid"></div>
+
+        <div class="tabs">
+            <button class="tab-button active-tab" onclick="openTab('analytics-tab', event)"><i class="fa-solid fa-chart-line"></i> Analytics Matrix</button>
+            <button class="tab-button" onclick="openTab('leaderboard-tab', event)"><i class="fa-solid fa-list-ol"></i> Array Leaderboard</button>
+        </div>
+
+        <div id="analytics-tab" class="tab-content active-content">
+            <div class="filter-container">
+                <label><i class="fa-solid fa-filter"></i> Select Active Racers Below</label>
+                <div id="driver-checkbox-list" class="custom-checkbox-grid"></div>
+            </div>
+
+            <div class="chart-grid-layout">
+                <div class="chart-card">
+                    <h3 class="custom-chart-title"><i class="fa-solid fa-arrow-trend-up"></i> Position Evolution Matrix</h3>
+                    <div id="position-chart"></div>
+                </div>
+
+                <div class="chart-card">
+                    <h3 class="custom-chart-title"><i class="fa-solid fa-wave-square"></i> Telemetry Pace Worm (Gap to Leader)</h3>
+                    <div id="worm-chart"></div>
+                </div>
+
+                <div class="chart-card">
+                    <h3 class="custom-chart-title"><i class="fa-solid fa-bolt"></i> Ultimate Speed / Fastest Lap Ranking</h3>
+                    <div id="fastestlap-chart"></div>
+                </div>
+
+                <div class="chart-card">
+                    <h3 class="custom-chart-title"><i class="fa-solid fa-shuffle"></i> Overtake Differential Index</h3>
+                    <div id="overtake-chart"></div>
+                </div>
+            </div>
+        </div>
+
+        <div id="leaderboard-tab" class="tab-content">
+            <div id="leaderboard" class="leaderboard-grid"></div>
+        </div>
+
+        <footer>
+            <p>&copy; 2026. Built for speed.</p>
+            <div class="social-links">
+                <a href="https://github.com/YOUR_GITHUB_USERNAME" target="_blank"><i class="fa-brands fa-github"></i> GitHub</a>
+                <a href="https://linkedin.com/in/YOUR_LINKEDIN_USERNAME" target="_blank"><i class="fa-brands fa-linkedin"></i> LinkedIn</a>
+            </div>
+        </footer>
+
+    </div>
+
+    <script src="static/js/app.js"></script>
+</body>
+</html>
