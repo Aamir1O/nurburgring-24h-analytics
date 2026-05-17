@@ -572,47 +572,34 @@ function openTab(tabId, event) {
 
 document.addEventListener("DOMContentLoaded", () => {
 
-    const officialRaceEnd = new Date(
-        "2026-05-18T16:00:00"
-    ).getTime();
+    const timerElement =
+        document.getElementById(
+            "countdown-timer"
+        );
 
-    const now = Date.now();
+    const statusContainer =
+        document.getElementById(
+            "live-status-container"
+        );
 
-    if (now >= officialRaceEnd) {
+    if (timerElement) {
 
-        const timerElement =
-            document.getElementById(
-                "countdown-timer"
-            );
+        timerElement.textContent =
+            "RACE CONCLUDED";
 
-        const statusContainer =
-            document.getElementById(
-                "live-status-container"
-            );
+        timerElement.style.color =
+            "#ff0055";
+    }
 
-        if (timerElement) {
+    if (statusContainer) {
 
-            timerElement.textContent =
-                "RACE CONCLUDED";
+        statusContainer.innerHTML = `
+            <i class="fa-solid fa-flag-checkered"></i>
+            RACE ENDED
+        `;
 
-            timerElement.style.color =
-                "#ff0055";
-        }
-
-        if (statusContainer) {
-
-            statusContainer.innerHTML = `
-                <i class="fa-solid fa-flag-checkered"></i>
-                RACE ENDED
-            `;
-
-            statusContainer.style.background =
-                "rgba(255,0,85,0.15)";
-        }
-
-    } else {
-
-        startRaceClock(24);
+        statusContainer.style.background =
+            "rgba(255,0,85,0.15)";
     }
 
     loadDashboard();
@@ -622,4 +609,3 @@ document.addEventListener("DOMContentLoaded", () => {
         30000
     );
 });
-
