@@ -25,7 +25,7 @@ app.mount("/static", StaticFiles(directory="frontend/static"), name="static")
 templates = Jinja2Templates(directory="frontend/templates")
 
 def get_connection():
-    return sqlite3.connect("database/race_data.db")
+    return sqlite3.connect("./database/race_data.db")
 
 @app.get("/")
 def home(request: Request):

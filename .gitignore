@@ -1,7 +1,12 @@
 venv/
 __pycache__/
+*.pyc
+
 data/raw/
 data/processed/
-*.pyc
+
 *.db-wal
 *.db-shm
+
+.DS_Store
+Thumbs.db
