@@ -1,6 +1,5 @@
 import os
 import time
-import sqlite3
 
 from datetime import datetime
 from io import StringIO
@@ -9,6 +8,62 @@ import pandas as pd
 
 from selenium import webdriver
 from selenium.webdriver.common.by import By
+
+from selenium.webdriver.support.ui import WebDriverWait
+from selenium.webdriver.support import expected_conditions as EC
+
+from sqlalchemy import create_engine
+
+
+# =========================================
+# SUPABASE DATABASE URL
+# =========================================
+
+DATABASE_URL = "postgresql://postgres:G+6qu8tYXEfEH6F@db.pqbainxuhahcqvwjxznu.supabase.co:5432/postgres"
+
+
+# =========================================
+# CREATE DATABASE ENGINE
+# =========================================
+
+engine = create_engine(
+    DATABASE_URL
+)
+
+
+# =========================================
+# CREATE TABLE IF NOT EXISTS
+# =========================================
+
+create_table_query = """
+
+CREATE TABLE IF NOT EXISTS race_data (
+
+    id SERIAL PRIMARY KEY,
+
+    position TEXT,
+    car_number TEXT,
+    class TEXT,
+    pro_class TEXT,
+    rank TEXT,
+    driver_name TEXT,
+    laps TEXT,
+    gap TEXT,
+    last_lap TEXT,
+    fastest_lap TEXT,
+    pit_stops TEXT,
+    vehicle TEXT,
+    collection_time TEXT
+
+)
+
+"""
+
+with engine.begin() as conn:
+
+    conn.exec_driver_sql(
+        create_table_query
+    )
 
 
 # =========================================
@@ -20,18 +75,6 @@ os.makedirs("data/processed", exist_ok=True)
 
 
 # =========================================
-# SQLITE CONNECTION
-# =========================================
-
-connection = sqlite3.connect(
-    "database/race_data.db",
-    check_same_thread=False
-)
-
-cursor = connection.cursor()
-
-
-# =========================================
 # START SELENIUM DRIVER
 # =========================================
 
@@ -39,26 +82,59 @@ print("Starting Chrome browser...")
 
 driver = webdriver.Chrome()
 
+
+# =========================================
+# OPEN LIVE TIMING PAGE
+# =========================================
+
 url = "https://www.24h-rennen.de/en/live-en/"
 
 driver.get(url)
 
 print("Opening live timing page...")
 
-time.sleep(10)
-
 
 # =========================================
-# SWITCH TO LIVE TIMING IFRAME
+# WAIT FOR IFRAME
 # =========================================
 
-iframes = driver.find_elements(By.TAG_NAME, "iframe")
+print("Waiting for live timing iframe...")
+
+
+WebDriverWait(driver, 30).until(
+
+    EC.presence_of_element_located(
+        (By.TAG_NAME, "iframe")
+    )
+)
+
+iframes = driver.find_elements(
+    By.TAG_NAME,
+    "iframe"
+)
 
 print(f"Total iframes found: {len(iframes)}")
 
-driver.switch_to.frame(iframes[2])
 
-print("Connected to live timing iframe")
+# =========================================
+# SWITCH TO IFRAME
+# =========================================
+
+if len(iframes) > 0:
+
+    driver.switch_to.frame(
+        iframes[2]
+    )
+
+    print(
+        "Connected to live timing iframe"
+    )
+
+else:
+
+    raise Exception(
+        "No iframe found."
+    )
 
 
 # =========================================
@@ -69,32 +145,44 @@ while True:
 
     try:
 
-        print("\nCollecting live race snapshot...")
+        print(
+            "\nCollecting live race snapshot..."
+        )
 
-        # ---------------------------------
+        # =================================
         # EXTRACT TABLE
-        # ---------------------------------
+        # =================================
 
         tables = driver.find_elements(
             By.TAG_NAME,
             "table"
         )
 
+        if len(tables) == 0:
+
+            print(
+                "No tables found."
+            )
+
+            time.sleep(10)
+
+            continue
+
         table_html = tables[0].get_attribute(
             "outerHTML"
         )
 
-        # ---------------------------------
+        # =================================
         # CONVERT TO DATAFRAME
-        # ---------------------------------
+        # =================================
 
         df = pd.read_html(
             StringIO(table_html)
         )[0]
 
-        # ---------------------------------
+        # =================================
         # CLEAN DATA
-        # ---------------------------------
+        # =================================
 
         if "Unnamed: 0" in df.columns:
 
@@ -103,6 +191,7 @@ while True:
             )
 
         core_columns = [
+
             "Pos.",
             "No.",
             "Class",
@@ -117,29 +206,32 @@ while True:
             "Vehicle"
         ]
 
-        race_df = df[core_columns].copy()
+        race_df = df[
+            core_columns
+        ].copy()
 
-        # ---------------------------------
+        # =================================
         # ADD TIMESTAMP
-        # ---------------------------------
+        # =================================
 
         collection_time = str(
             datetime.now()
         )
 
-        race_df["collection_time"] = (
-            collection_time
-        )
+        race_df[
+            "collection_time"
+        ] = collection_time
 
-        # ---------------------------------
+        # =================================
         # SAVE CSV BACKUP
-        # ---------------------------------
+        # =================================
 
         timestamp = datetime.now().strftime(
             "%Y%m%d_%H%M%S"
         )
 
         processed_path = (
+
             f"data/processed/"
             f"clean_race_data_{timestamp}.csv"
         )
@@ -149,78 +241,72 @@ while True:
             index=False
         )
 
-        # ---------------------------------
-        # INSERT INTO SQLITE
-        # ---------------------------------
+        # =================================
+        # RENAME COLUMNS
+        # =================================
 
-        for _, row in race_df.iterrows():
+        race_df.columns = [
 
-            cursor.execute("""
-            INSERT INTO race_data (
+            "position",
+            "car_number",
+            "class",
+            "pro_class",
+            "rank",
+            "driver_name",
+            "laps",
+            "gap",
+            "last_lap",
+            "fastest_lap",
+            "pit_stops",
+            "vehicle",
+            "collection_time"
+        ]
 
-                position,
-                car_number,
-                class,
-                pro_class,
-                rank,
-                driver_name,
-                laps,
-                gap,
-                last_lap,
-                fastest_lap,
-                pit_stops,
-                vehicle,
-                collection_time
+        # =================================
+        # INSERT INTO SUPABASE
+        # =================================
 
-            )
+        race_df.to_sql(
 
-            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+            "race_data",
 
-            """, (
+            engine,
 
-                row["Pos."],
-                row["No."],
-                row["Class"],
-                row["Pro"],
-                row["Rank"],
-                row["Name"],
-                row["Laps"],
-                row["Gap"],
-                row["Last"],
-                row["Fastest"],
-                row["Pit"],
-                row["Vehicle"],
-                row["collection_time"]
+            if_exists="append",
 
-            ))
+            index=False
+        )
 
-        connection.commit()
-
-        # ---------------------------------
-        # PRINT SUCCESS
-        # ---------------------------------
+        # =================================
+        # SUCCESS LOGS
+        # =================================
 
         print(
+
             f"Inserted {len(race_df)} rows "
-            f"into SQLite database."
+            f"into Supabase PostgreSQL."
         )
 
         print(
+
             f"Collection time: "
             f"{collection_time}"
         )
 
-        # ---------------------------------
+        # =================================
         # WAIT 30 SECONDS
-        # ---------------------------------
+        # =================================
 
         time.sleep(30)
 
     except Exception as e:
 
         print("\nERROR OCCURRED:")
+
         print(e)
 
-        print("\nRetrying in 10 seconds...")
+        print(
+            "\nRetrying in 10 seconds..."
+        )
 
         time.sleep(10)
