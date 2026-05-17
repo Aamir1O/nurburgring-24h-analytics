@@ -1,18 +1,7 @@
-# Python
-__pycache__/
-*.pyc
-
-# Virtual Environment
 venv/
-
-# Runtime Data
-data/processed/
+__pycache__/
 data/raw/
-
-# SQLite WAL files
+data/processed/
+*.pyc
 *.db-wal
 *.db-shm
-
-# OS
-.DS_Store
-Thumbs.db
