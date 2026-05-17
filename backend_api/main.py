@@ -11,7 +11,7 @@ from fastapi.templating import Jinja2Templates
 # DATABASE CONNECTION
 # =========================================
 
-DATABASE_URL = "postgresql://postgres:G+6qu8tYXEfEH6F@db.pqbainxuhahcqvwjxznu.supabase.co:5432/postgres"
+DATABASE_URL = os.getenv("DATABASE_URL")
 
 engine = create_engine(
     DATABASE_URL
