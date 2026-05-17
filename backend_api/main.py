@@ -185,15 +185,24 @@ def winner_prediction():
         latest_time
     ].copy()
 
+    latest_df = latest_df.fillna("")
+
+
+    # =========================================
     # LAP TIME PARSER
+    # =========================================
 
     def lap_to_seconds(lap):
 
         try:
 
-            minutes, seconds = str(
-                lap
-            ).split(":")
+            lap = str(lap)
+
+            if ":" not in lap:
+
+                return 9999
+
+            minutes, seconds = lap.split(":")
 
             return (
                 float(minutes) * 60
@@ -204,6 +213,7 @@ def winner_prediction():
         except:
 
             return 9999
+
 
     latest_df["lap_seconds"] = (
 
