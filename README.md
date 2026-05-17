@@ -686,6 +686,11 @@ http://127.0.0.1:8000
 
 ---
 
+# Dashboard Preview
+
+<img width="1420" height="927" alt="Screenshot 2026-05-17 180808" src="https://github.com/user-attachments/assets/9eca969e-0e76-48fa-ad14-b0c600b9a29d" />
+<img width="980" height="817" alt="Screenshot 2026-05-17 180819" src="https://github.com/user-attachments/assets/512505b7-11b2-4e39-b3ff-d2006d6177ea" />
+
 
 # Resume Value
 
