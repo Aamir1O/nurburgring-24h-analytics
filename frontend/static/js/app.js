@@ -375,19 +375,48 @@ function lapToSeconds(lap) {
 
     try {
 
-        const parts = lap.split(":");
+        lap = String(lap).trim();
 
-        if (parts.length < 2) {
-            return parseFloat(parts[0]) || null;
+        // INVALID VALUES
+        if (
+            lap === "---" ||
+            lap === "" ||
+            lap.toUpperCase() === "OUT"
+        ) {
+            return null;
         }
 
-        return (
-            parseFloat(parts[0]) * 60
-            +
-            parseFloat(parts[1])
-        );
+        // VALID FORMAT
+        if (lap.includes(":")) {
+
+            const parts = lap.split(":");
+
+            const minutes = parseFloat(parts[0]);
+            const seconds = parseFloat(parts[1]);
+
+            if (
+                isNaN(minutes) ||
+                isNaN(seconds)
+            ) {
+                return null;
+            }
+
+            return (
+                minutes * 60
+                +
+                seconds
+            );
+        }
+
+        // FALLBACK
+        const numeric = parseFloat(lap);
+
+        return isNaN(numeric)
+            ? null
+            : numeric;
 
     } catch {
+
         return null;
     }
 }
