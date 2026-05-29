@@ -2,6 +2,9 @@
 
 ## Real-Time Endurance Racing Analytics & Prediction Platform
 
+## 🔴 Live Dashboard
+👉 **[View Live Platform → nurburgring-live-analytics.onrender.com](https://nurburgring-live-analytics.onrender.com)**
+
 A full-stack live motorsport analytics platform built around the ADAC RAVENOL 24H Nürburgring endurance race.
 
 This project collects live race timing data using Selenium, processes and stores the data using Python and SQLite, exposes analytics APIs using FastAPI, and visualizes race insights through a modern HTML/CSS/JavaScript frontend.
